@@ -1,0 +1,247 @@
+{
+  "groups": [
+    {
+      "name": "web-starter",
+      "type": "com.ldx.webstarter.properties.WebStarterProperties",
+      "sourceType": "com.ldx.webstarter.properties.WebStarterProperties",
+      "description": "Configuration properties for Web Starter."
+    },
+    {
+      "name": "web-starter.response",
+      "type": "com.ldx.webstarter.properties.ResponseProperties",
+      "sourceType": "com.ldx.webstarter.properties.ResponseProperties",
+      "description": "Response standardization configuration."
+    },
+    {
+      "name": "web-starter.cors",
+      "type": "com.ldx.webstarter.properties.CorsProperties",
+      "sourceType": "com.ldx.webstarter.properties.CorsProperties",
+      "description": "CORS configuration properties."
+    },
+    {
+      "name": "web-starter.pagination",
+      "type": "com.ldx.webstarter.properties.PaginationProperties",
+      "sourceType": "com.ldx.webstarter.properties.PaginationProperties",
+      "description": "Pagination limit configuration."
+    },
+    {
+      "name": "web-starter.file-storage",
+      "type": "com.ldx.webstarter.infrastructure.properties.FileStorageProperties",
+      "sourceType": "com.ldx.webstarter.infrastructure.properties.FileStorageProperties",
+      "description": "File storage configuration properties."
+    }
+  ],
+  "properties": [
+    {
+      "name": "web-starter.enabled",
+      "type": "java.lang.Boolean",
+      "defaultValue": true,
+      "description": "Enable web-starter auto-configuration."
+    },
+    {
+      "name": "web-starter.response.enabled",
+      "type": "java.lang.Boolean",
+      "defaultValue": true,
+      "description": "Enable response standardization."
+    },
+    {
+      "name": "web-starter.response.wrap-response",
+      "type": "java.lang.Boolean",
+      "defaultValue": true,
+      "description": "Enable automatic response wrapping for controller methods."
+    },
+    {
+      "name": "web-starter.response.include-request-id",
+      "type": "java.lang.Boolean",
+      "defaultValue": true,
+      "description": "Include request ID in response."
+    },
+    {
+      "name": "web-starter.response.include-timestamp",
+      "type": "java.lang.Boolean",
+      "defaultValue": true,
+      "description": "Include timestamp in response."
+    },
+    {
+      "name": "web-starter.cors.enabled",
+      "type": "java.lang.Boolean",
+      "defaultValue": true,
+      "description": "Enable CORS configuration."
+    },
+    {
+      "name": "web-starter.cors.allowed-origins",
+      "type": "java.util.List<java.lang.String>",
+      "defaultValue": ["*"],
+      "description": "Comma-separated list of origins to allow. Use '*' to allow all origins."
+    },
+    {
+      "name": "web-starter.cors.allowed-methods",
+      "type": "java.util.List<java.lang.String>",
+      "defaultValue": ["GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"],
+      "description": "Comma-separated list of HTTP methods to allow."
+    },
+    {
+      "name": "web-starter.cors.allowed-headers",
+      "type": "java.util.List<java.lang.String>",
+      "defaultValue": ["*"],
+      "description": "Comma-separated list of headers to allow in a request."
+    },
+    {
+      "name": "web-starter.cors.allow-credentials",
+      "type": "java.lang.Boolean",
+      "defaultValue": false,
+      "description": "Set whether credentials are supported."
+    },
+    {
+      "name": "web-starter.cors.max-age",
+      "type": "java.time.Duration",
+      "defaultValue": "30m",
+      "description": "How long the response to a pre-flight request can be cached by clients."
+    },
+    {
+      "name": "web-starter.cors.path-pattern",
+      "type": "java.lang.String",
+      "defaultValue": "/**",
+      "description": "Path pattern for CORS configuration."
+    },
+    {
+      "name": "web-starter.pagination.enabled",
+      "type": "java.lang.Boolean",
+      "defaultValue": true,
+      "description": "Enable pagination limit."
+    },
+    {
+      "name": "web-starter.pagination.default-size",
+      "type": "java.lang.Integer",
+      "defaultValue": 20,
+      "description": "Default page size."
+    },
+    {
+      "name": "web-starter.pagination.max-size",
+      "type": "java.lang.Integer",
+      "defaultValue": 100,
+      "description": "Maximum page size allowed."
+    },
+    {
+      "name": "web-starter.pagination.max-elements",
+      "type": "java.lang.Long",
+      "defaultValue": 5000,
+      "description": "Maximum total elements allowed."
+    },
+    {
+      "name": "web-starter.pagination.page-parameter",
+      "type": "java.lang.String",
+      "defaultValue": "page",
+      "description": "Name of the page parameter."
+    },
+    {
+      "name": "web-starter.pagination.size-parameter",
+      "type": "java.lang.String",
+      "defaultValue": "size",
+      "description": "Name of the size parameter."
+    },
+    {
+      "name": "web-starter.pagination.sort-parameter",
+      "type": "java.lang.String",
+      "defaultValue": "sort",
+      "description": "Name of the sort parameter."
+    },
+    {
+      "name": "web-starter.file-storage.enabled",
+      "type": "java.lang.Boolean",
+      "defaultValue": true,
+      "description": "Enable file storage functionality."
+    },
+    {
+      "name": "web-starter.file-storage.upload.max-file-size",
+      "type": "java.lang.String",
+      "defaultValue": "10MB",
+      "description": "Maximum allowed file size for uploads."
+    },
+    {
+      "name": "web-starter.file-storage.upload.max-request-size",
+      "type": "java.lang.String",
+      "defaultValue": "100MB",
+      "description": "Maximum allowed request size for multipart uploads."
+    },
+    {
+      "name": "web-starter.file-storage.upload.allowed-extensions",
+      "type": "java.util.List<java.lang.String>",
+      "defaultValue": ["jpg", "jpeg", "png", "gif", "pdf", "doc", "docx", "txt"],
+      "description": "List of allowed file extensions."
+    },
+    {
+      "name": "web-starter.file-storage.upload.enable-virus-scanning",
+      "type": "java.lang.Boolean",
+      "defaultValue": false,
+      "description": "Enable basic virus scanning for uploaded files."
+    },
+    {
+      "name": "web-starter.file-storage.local.base-path",
+      "type": "java.lang.String",
+      "defaultValue": "./uploads",
+      "description": "Base path for local file storage."
+    },
+    {
+      "name": "web-starter.file-storage.s3.enabled",
+      "type": "java.lang.Boolean",
+      "defaultValue": false,
+      "description": "Enable AWS S3 storage."
+    },
+    {
+      "name": "web-starter.file-storage.s3.bucket-name",
+      "type": "java.lang.String",
+      "description": "AWS S3 bucket name."
+    },
+    {
+      "name": "web-starter.file-storage.s3.region",
+      "type": "java.lang.String",
+      "defaultValue": "us-east-1",
+      "description": "AWS S3 region."
+    }
+  ],
+  "hints": [
+    {
+      "name": "web-starter.cors.allowed-origins",
+      "values": [
+        {
+          "value": "*",
+          "description": "Allow all origins."
+        },
+        {
+          "value": "http://localhost:3000",
+          "description": "Allow localhost frontend."
+        }
+      ]
+    },
+    {
+      "name": "web-starter.cors.allowed-methods",
+      "values": [
+        {
+          "value": "GET",
+          "description": "HTTP GET method."
+        },
+        {
+          "value": "POST",
+          "description": "HTTP POST method."
+        },
+        {
+          "value": "PUT",
+          "description": "HTTP PUT method."
+        },
+        {
+          "value": "DELETE",
+          "description": "HTTP DELETE method."
+        },
+        {
+          "value": "PATCH",
+          "description": "HTTP PATCH method."
+        },
+        {
+          "value": "OPTIONS",
+          "description": "HTTP OPTIONS method."
+        }
+      ]
+    }
+  ]
+}
