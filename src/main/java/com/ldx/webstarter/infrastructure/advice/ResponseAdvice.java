@@ -61,8 +61,10 @@ public class ResponseAdvice implements ResponseBodyAdvice<Object> {
         
         // Actuator 엔드포인트는 건너뜀
         String declaringClassName = returnType.getDeclaringClass().getName();
-        if (declaringClassName.startsWith("org.springframework.boot.actuator")) {
-            logger.debug("Skipping - actuator endpoint");
+        if (declaringClassName.startsWith("org.springframework.boot.actuator") ||
+            declaringClassName.contains("HealthEndpoint") ||
+            declaringClassName.contains("InfoEndpoint")) {
+            logger.debug("Skipping - actuator endpoint: {}", declaringClassName);
             return false;
         }
         

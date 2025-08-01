@@ -7,9 +7,12 @@ import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.FieldError;
+import org.springframework.web.HttpRequestMethodNotSupportedException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+import org.springframework.web.servlet.NoHandlerFoundException;
+import org.springframework.web.servlet.resource.NoResourceFoundException;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -75,6 +78,57 @@ public class GlobalExceptionHandler {
         logger.warn("Resource not found: {}", e.getMessage());
         
         ErrorResponse error = ErrorResponse.of(e.getCode(), e.getMessage());
+        ApiResponse<Void> response = ApiResponse.error(error);
+        
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(response);
+    }
+    
+    /**
+     * 지원하지 않는 HTTP 메서드 예외를 처리합니다.
+     * 
+     * @param e HttpRequestMethodNotSupportedException
+     * @return 405 Method Not Allowed 응답
+     */
+    @ExceptionHandler(HttpRequestMethodNotSupportedException.class)
+    public ResponseEntity<ApiResponse<Void>> handleMethodNotSupportedException(HttpRequestMethodNotSupportedException e) {
+        logger.warn("Method not supported: {}", e.getMessage());
+        
+        ErrorResponse error = ErrorResponse.of("METHOD_NOT_ALLOWED", 
+            String.format("지원하지 않는 HTTP 메서드입니다. 지원되는 메서드: %s", String.join(", ", e.getSupportedMethods())));
+        ApiResponse<Void> response = ApiResponse.error(error);
+        
+        return ResponseEntity.status(HttpStatus.METHOD_NOT_ALLOWED).body(response);
+    }
+    
+    /**
+     * 핸들러를 찾을 수 없는 예외를 처리합니다.
+     * 
+     * @param e NoHandlerFoundException
+     * @return 404 Not Found 응답
+     */
+    @ExceptionHandler(NoHandlerFoundException.class)
+    public ResponseEntity<ApiResponse<Void>> handleNoHandlerFoundException(NoHandlerFoundException e) {
+        logger.warn("No handler found: {}", e.getMessage());
+        
+        ErrorResponse error = ErrorResponse.of("NOT_FOUND", 
+            String.format("요청한 리소스를 찾을 수 없습니다: %s %s", e.getHttpMethod(), e.getRequestURL()));
+        ApiResponse<Void> response = ApiResponse.error(error);
+        
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(response);
+    }
+    
+    /**
+     * 정적 리소스를 찾을 수 없는 예외를 처리합니다.
+     * 
+     * @param e NoResourceFoundException
+     * @return 404 Not Found 응답
+     */
+    @ExceptionHandler(NoResourceFoundException.class)
+    public ResponseEntity<ApiResponse<Void>> handleNoResourceFoundException(NoResourceFoundException e) {
+        logger.warn("No resource found: {}", e.getMessage());
+        
+        ErrorResponse error = ErrorResponse.of("NOT_FOUND", 
+            String.format("요청한 리소스를 찾을 수 없습니다: %s", e.getResourcePath()));
         ApiResponse<Void> response = ApiResponse.error(error);
         
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(response);

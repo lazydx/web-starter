@@ -4,6 +4,7 @@ import com.ldx.webstarter.infrastructure.exception.GlobalExceptionHandler;
 import com.ldx.webstarter.infrastructure.resolver.PaginationArgumentResolver;
 import com.ldx.webstarter.infrastructure.properties.PaginationProperties;
 import org.springframework.boot.autoconfigure.AutoConfiguration;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
 import org.springframework.boot.autoconfigure.web.servlet.WebMvcAutoConfiguration;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
@@ -44,6 +45,7 @@ public class ExceptionAutoConfiguration {
      * @return PaginationArgumentResolver 인스턴스
      */
     @Bean
+    @ConditionalOnClass(name = "org.springframework.data.domain.Pageable")
     public PaginationArgumentResolver paginationArgumentResolver(PaginationProperties paginationProperties) {
         return new PaginationArgumentResolver(paginationProperties);
     }
@@ -55,6 +57,7 @@ public class ExceptionAutoConfiguration {
      * @return WebMvcConfigurer 인스턴스
      */
     @Bean
+    @ConditionalOnClass(name = "org.springframework.data.domain.Pageable")
     public WebMvcConfigurer paginationConfigurer(PaginationArgumentResolver paginationArgumentResolver) {
         return new WebMvcConfigurer() {
             @Override

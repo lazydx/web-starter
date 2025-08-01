@@ -25,9 +25,13 @@ dependencies {
     api 'org.springframework.boot:spring-boot-autoconfigure'
     api 'org.springframework.data:spring-data-commons'
     
+    // Actuator support for health endpoints
+    api 'org.springframework.boot:spring-boot-starter-actuator'
+    
     annotationProcessor 'org.springframework.boot:spring-boot-configuration-processor'
     
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
+    testImplementation 'org.springframework.boot:spring-boot-starter-actuator'
     testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
 }
 
@@ -50,7 +54,7 @@ publishing {
             from components.java
             
             groupId = 'com.ldx'
-            artifactId = 'webstarter'
+            artifactId = 'web-starter'
             version = '1.0.0'
             
             suppressPomMetadataWarningsFor('runtimeElements')

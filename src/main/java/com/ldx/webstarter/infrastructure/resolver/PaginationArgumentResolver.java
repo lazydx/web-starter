@@ -1,6 +1,7 @@
 package com.ldx.webstarter.infrastructure.resolver;
 
 import com.ldx.webstarter.infrastructure.properties.PaginationProperties;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.core.MethodParameter;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -21,6 +22,7 @@ import java.util.Optional;
  * @author web-starter
  * @since 1.0.0
  */
+@ConditionalOnClass(Pageable.class)
 public class PaginationArgumentResolver implements HandlerMethodArgumentResolver {
     
     private final PaginationProperties paginationProperties;
