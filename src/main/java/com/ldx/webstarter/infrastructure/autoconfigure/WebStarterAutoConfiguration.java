@@ -30,7 +30,9 @@ import org.slf4j.LoggerFactory;
 @Import({
     ResponseAutoConfiguration.class,
     CorsAutoConfiguration.class,
-    ExceptionAutoConfiguration.class
+    ExceptionAutoConfiguration.class,
+    FileAutoConfiguration.class,
+    DebugAutoConfiguration.class
 })
 public class WebStarterAutoConfiguration {
     

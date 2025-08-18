@@ -1,7 +1,9 @@
 package com.ldx.webstarter.file;
 
-import com.ldx.webstarter.infrastructure.exception.BusinessException;
+import com.ldx.webstarter.file.FileNotFoundException;
 import com.ldx.webstarter.infrastructure.properties.FileStorageProperties;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.core.io.Resource;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -17,6 +19,8 @@ import java.nio.charset.StandardCharsets;
 @RestController
 @RequestMapping("/api/files")
 public class FileDownloadController {
+    
+    private static final Logger logger = LoggerFactory.getLogger(FileDownloadController.class);
 
     private final FileStorageService fileStorageService;
     private final FileStorageProperties properties;
@@ -31,12 +35,18 @@ public class FileDownloadController {
     public ResponseEntity<Resource> downloadFile(@PathVariable String filename,
                                                @RequestParam(value = "inline", defaultValue = "false") boolean inline,
                                                HttpServletRequest request) {
+        logger.debug("Download request for file: {}", filename);
+        
         try {
             if (!fileStorageService.exists(filename)) {
-                throw new BusinessException("FILE_NOT_FOUND", "File not found: " + filename);
+                logger.warn("File not found: {}", filename);
+                throw new FileNotFoundException("File not found: " + filename);
             }
 
+            logger.debug("File exists, loading resource: {}", filename);
             Resource resource = fileStorageService.loadAsResource(filename);
+            
+            logger.debug("Resource loaded, getting metadata: {}", filename);
             FileMetadata metadata = fileStorageService.getFileMetadata(filename);
 
             String contentType = determineContentType(metadata, request);
@@ -57,14 +67,17 @@ public class FileDownloadController {
                 headers.setCacheControl("max-age=" + properties.getDownload().getCacheMaxAge());
             }
 
+            logger.debug("Returning file resource for: {}", filename);
             return ResponseEntity.ok()
                 .headers(headers)
                 .body(resource);
 
-        } catch (BusinessException e) {
+        } catch (FileNotFoundException e) {
+            logger.error("File not found exception: {}", e.getMessage());
             throw e;
         } catch (Exception e) {
-            throw new BusinessException("FILE_DOWNLOAD_ERROR", "Failed to download file: " + e.getMessage());
+            logger.error("Failed to download file: {} - {}", filename, e.getMessage(), e);
+            throw new RuntimeException("Failed to download file: " + e.getMessage(), e);
         }
     }
 
@@ -80,7 +93,7 @@ public class FileDownloadController {
                                              @RequestHeader(value = "Range", required = false) String rangeHeader) {
         try {
             if (!fileStorageService.exists(filename)) {
-                throw new BusinessException("FILE_NOT_FOUND", "File not found: " + filename);
+                throw new FileNotFoundException("File not found: " + filename);
             }
 
             Resource resource = fileStorageService.loadAsResource(filename);
@@ -103,10 +116,10 @@ public class FileDownloadController {
                 .headers(headers)
                 .body(resource);
 
-        } catch (BusinessException e) {
+        } catch (FileNotFoundException e) {
             throw e;
         } catch (Exception e) {
-            throw new BusinessException("FILE_STREAM_ERROR", "Failed to stream file: " + e.getMessage());
+            throw new RuntimeException("Failed to stream file: " + e.getMessage(), e);
         }
     }
 

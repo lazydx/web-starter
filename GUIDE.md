@@ -7,7 +7,7 @@ A starter library that provides common features for Spring Boot web applications
 ### Gradle
 ```gradle
 dependencies {
-    implementation 'com.ldx:webstarter:1.0.0'
+    implementation 'io.github.lazydx:web-starter:1.1.0'
     // or use local JAR file
     implementation files('libs/webstarter-0.0.1-SNAPSHOT.jar')
 }
@@ -16,9 +16,9 @@ dependencies {
 ### Maven
 ```xml
 <dependency>
-    <groupId>com.ldx</groupId>
-    <artifactId>webstarter</artifactId>
-    <version>1.0.0</version>
+    <groupId>io.github.lazydx</groupId>
+    <artifactId>web-starter</artifactId>
+    <version>1.1.0</version>
 </dependency>
 ```
 

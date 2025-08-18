@@ -39,30 +39,20 @@ public class ExceptionAutoConfiguration {
     }
     
     /**
-     * 페이지네이션 인수 리졸버 빈을 생성합니다.
+     * 페이지네이션 리졸버를 등록하는 WebMvcConfigurer 빈을 생성합니다.
+     * Spring Data의 기본 PageableHandlerMethodArgumentResolver보다 우선순위를 높여 등록합니다.
      * 
      * @param paginationProperties 페이지네이션 관련 프로퍼티
-     * @return PaginationArgumentResolver 인스턴스
-     */
-    @Bean
-    @ConditionalOnClass(name = "org.springframework.data.domain.Pageable")
-    public PaginationArgumentResolver paginationArgumentResolver(PaginationProperties paginationProperties) {
-        return new PaginationArgumentResolver(paginationProperties);
-    }
-    
-    /**
-     * 페이지네이션 리졸버를 등록하는 WebMvcConfigurer 빈을 생성합니다.
-     * 
-     * @param paginationArgumentResolver 페이지네이션 인수 리졸버
      * @return WebMvcConfigurer 인스턴스
      */
     @Bean
     @ConditionalOnClass(name = "org.springframework.data.domain.Pageable")
-    public WebMvcConfigurer paginationConfigurer(PaginationArgumentResolver paginationArgumentResolver) {
+    public WebMvcConfigurer paginationConfigurer(PaginationProperties paginationProperties) {
         return new WebMvcConfigurer() {
             @Override
             public void addArgumentResolvers(List<HandlerMethodArgumentResolver> resolvers) {
-                resolvers.add(paginationArgumentResolver);
+                // 기존 PageableHandlerMethodArgumentResolver보다 먼저 추가하여 우선순위 확보
+                resolvers.add(0, new PaginationArgumentResolver(paginationProperties));
             }
         };
     }

@@ -32,7 +32,7 @@ public class GlobalExceptionHandler {
     private static final Logger logger = LoggerFactory.getLogger(GlobalExceptionHandler.class);
     
     /**
-     * 비즈니스 예외를 처리합니다.
+     * 비즈니스 예외를 처리합니다 (기존 infrastructure 패키지).
      * 
      * @param e BusinessException
      * @return 400 Bad Request 응답
@@ -45,6 +45,102 @@ public class GlobalExceptionHandler {
         ApiResponse<Void> response = ApiResponse.error(error);
         
         return ResponseEntity.badRequest().body(response);
+    }
+    
+    /**
+     * 새로운 WebStarter 예외를 처리합니다 (공개 API).
+     * 
+     * @param e com.ldx.webstarter.exception.WebStarterException
+     * @return 400 Bad Request 응답
+     */
+    @ExceptionHandler(com.ldx.webstarter.exception.WebStarterException.class)
+    public ResponseEntity<ApiResponse<Void>> handleWebStarterException(com.ldx.webstarter.exception.WebStarterException e) {
+        logger.warn("WebStarter exception occurred: {}", e.getMessage());
+        
+        ErrorResponse error = ErrorResponse.of(e.getCode(), e.getMessage());
+        ApiResponse<Void> response = ApiResponse.error(error);
+        
+        return ResponseEntity.badRequest().body(response);
+    }
+    
+    /**
+     * 새로운 비즈니스 예외를 처리합니다 (공개 API).
+     * 
+     * @param e com.ldx.webstarter.exception.BusinessException
+     * @return 400 Bad Request 응답
+     */
+    @ExceptionHandler(com.ldx.webstarter.exception.BusinessException.class)
+    public ResponseEntity<ApiResponse<Void>> handlePublicBusinessException(com.ldx.webstarter.exception.BusinessException e) {
+        logger.warn("Public Business exception occurred: {}", e.getMessage());
+        
+        ErrorResponse error = ErrorResponse.of(e.getCode(), e.getMessage());
+        ApiResponse<Void> response = ApiResponse.error(error);
+        
+        return ResponseEntity.badRequest().body(response);
+    }
+    
+    /**
+     * 유효성 검증 예외를 처리합니다 (공개 API).
+     * 
+     * @param e com.ldx.webstarter.exception.ValidationException
+     * @return 422 Unprocessable Entity 응답
+     */
+    @ExceptionHandler(com.ldx.webstarter.exception.ValidationException.class)
+    public ResponseEntity<ApiResponse<Void>> handlePublicValidationException(com.ldx.webstarter.exception.ValidationException e) {
+        logger.warn("Public Validation exception occurred: {}", e.getMessage());
+        
+        ErrorResponse error = ErrorResponse.of(e.getCode(), e.getMessage());
+        ApiResponse<Void> response = ApiResponse.error(error);
+        
+        return ResponseEntity.unprocessableEntity().body(response);
+    }
+    
+    /**
+     * 잘못된 인수 예외를 처리합니다.
+     * 
+     * @param e IllegalArgumentException
+     * @return 400 Bad Request 응답
+     */
+    @ExceptionHandler(IllegalArgumentException.class)
+    public ResponseEntity<ApiResponse<Void>> handleIllegalArgumentException(IllegalArgumentException e) {
+        logger.warn("Illegal argument exception occurred: {}", e.getMessage());
+        
+        ErrorResponse error = ErrorResponse.of("BAD_REQUEST", e.getMessage());
+        ApiResponse<Void> response = ApiResponse.error(error);
+        
+        return ResponseEntity.badRequest().body(response);
+    }
+    
+    /**
+     * 널 포인터 예외를 처리합니다.
+     * 
+     * @param e NullPointerException
+     * @return 400 Bad Request 응답
+     */
+    @ExceptionHandler(NullPointerException.class)
+    public ResponseEntity<ApiResponse<Void>> handleNullPointerException(NullPointerException e) {
+        logger.warn("Null pointer exception occurred: {}", e.getMessage());
+        
+        ErrorResponse error = ErrorResponse.of("BAD_REQUEST", "필수 값이 누락되었습니다.");
+        ApiResponse<Void> response = ApiResponse.error(error);
+        
+        return ResponseEntity.badRequest().body(response);
+    }
+    
+    /**
+     * 잘못된 상태 예외를 처리합니다.
+     * 
+     * @param e IllegalStateException
+     * @return 409 Conflict 응답
+     */
+    @ExceptionHandler(IllegalStateException.class)
+    public ResponseEntity<ApiResponse<Void>> handleIllegalStateException(IllegalStateException e) {
+        logger.warn("Illegal state exception occurred: {}", e.getMessage());
+        
+        ErrorResponse error = ErrorResponse.of("CONFLICT", e.getMessage());
+        ApiResponse<Void> response = ApiResponse.error(error);
+        
+        return ResponseEntity.status(HttpStatus.CONFLICT).body(response);
     }
     
     /**

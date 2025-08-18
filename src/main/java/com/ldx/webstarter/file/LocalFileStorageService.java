@@ -103,12 +103,18 @@ public class LocalFileStorageService implements FileStorageService {
     public Resource loadAsResource(String filename) {
         try {
             Path file = rootLocation.resolve(filename).normalize();
+            
+            // 경로가 rootLocation 내부에 있는지 보안 검증
+            if (!file.startsWith(rootLocation)) {
+                throw new RuntimeException("Path traversal attempt detected: " + filename);
+            }
+            
             Resource resource = new UrlResource(file.toUri());
             
             if (resource.exists() && resource.isReadable()) {
                 return resource;
             } else {
-                throw new RuntimeException("Could not read file: " + filename);
+                throw new FileNotFoundException("Could not read file: " + filename + " at path: " + file.toString());
             }
         } catch (MalformedURLException e) {
             throw new RuntimeException("Could not read file: " + filename, e);

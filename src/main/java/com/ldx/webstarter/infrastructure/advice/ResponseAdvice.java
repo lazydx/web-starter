@@ -6,7 +6,9 @@ import com.ldx.webstarter.response.ApiResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.core.MethodParameter;
+import org.springframework.core.io.Resource;
 import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageConverter;
 import org.springframework.http.converter.StringHttpMessageConverter;
 import org.springframework.http.server.ServerHttpRequest;
@@ -59,6 +61,21 @@ public class ResponseAdvice implements ResponseBodyAdvice<Object> {
             return false;
         }
         
+        // Resource 타입(파일 다운로드)은 건너뜀
+        if (Resource.class.isAssignableFrom(returnType.getParameterType())) {
+            logger.debug("Skipping - Resource type (file download)");
+            return false;
+        }
+        
+        // ResponseEntity<Resource> 타입도 건너뜀
+        if (ResponseEntity.class.isAssignableFrom(returnType.getParameterType())) {
+            // ResponseEntity의 Generic 타입이 Resource인지 확인
+            if (returnType.getGenericParameterType().getTypeName().contains("Resource")) {
+                logger.debug("Skipping - ResponseEntity<Resource> type (file download)");
+                return false;
+            }
+        }
+        
         // Actuator 엔드포인트는 건너뜀
         String declaringClassName = returnType.getDeclaringClass().getName();
         if (declaringClassName.startsWith("org.springframework.boot.actuator") ||
@@ -68,10 +85,10 @@ public class ResponseAdvice implements ResponseBodyAdvice<Object> {
             return false;
         }
         
-        // StringHttpMessageConverter는 건너뜀 (ClassCastException 방지)
+        // String 타입의 경우 특별 처리 (JSON으로 변환하여 래핑)
         if (converterType != null && converterType.equals(StringHttpMessageConverter.class)) {
-            logger.debug("Skipping - StringHttpMessageConverter");
-            return false;
+            logger.debug("String response detected - will wrap with ApiResponse");
+            return true;
         }
         
         // void 타입은 반드시 처리 (빈 성공 응답 반환)
@@ -119,6 +136,23 @@ public class ResponseAdvice implements ResponseBodyAdvice<Object> {
         if (body == null && returnType != null && returnType.getParameterType().equals(Void.TYPE)) {
             logger.debug("Void response, returning empty success response");
             return ApiResponse.success();
+        }
+        
+        // String 타입의 경우 JSON으로 직렬화하기 위해 특별 처리
+        if (selectedConverterType != null && selectedConverterType.equals(StringHttpMessageConverter.class)) {
+            logger.debug("Handling String response - converting to JSON");
+            response.getHeaders().setContentType(MediaType.APPLICATION_JSON);
+            ApiResponse<?> wrappedResponse = ApiResponse.success(body);
+            
+            try {
+                // ObjectMapper를 사용하여 JSON 문자열로 변환
+                String jsonResponse = objectMapper.writeValueAsString(wrappedResponse);
+                logger.debug("Converted String response to JSON: {}", jsonResponse);
+                return jsonResponse;
+            } catch (Exception e) {
+                logger.error("Failed to convert response to JSON", e);
+                return wrappedResponse;
+            }
         }
         
         // Content-Type을 JSON으로 설정
