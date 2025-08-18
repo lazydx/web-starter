@@ -107,7 +107,7 @@ public class WebStarterIntegrationTestSuite {
 
         // 실제 다운로드는 파일명을 알아야 하므로, 여기서는 존재하지 않는 파일에 대한 에러 처리 테스트
         mockMvc.perform(get("/api/files/download/nonexistent.txt"))
-                .andExpect(status().isOk()) // ResponseAdvice에 의해 래핑된 에러 응답
+                .andExpect(status().isNotFound()) // FileNotFoundException이 404로 처리됨
                 .andExpect(content().contentType("application/json"));
     }
 

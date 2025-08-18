@@ -2,6 +2,7 @@ package com.ldx.webstarter.infrastructure.exception;
 
 import com.ldx.webstarter.response.ApiResponse;
 import com.ldx.webstarter.response.ErrorResponse;
+import com.ldx.webstarter.file.FileNotFoundException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
@@ -161,6 +162,22 @@ public class GlobalExceptionHandler {
         ApiResponse<Void> response = ApiResponse.error(error);
         
         return ResponseEntity.unprocessableEntity().body(response);
+    }
+    
+    /**
+     * 파일을 찾을 수 없는 예외를 처리합니다.
+     * 
+     * @param e FileNotFoundException
+     * @return 404 Not Found 응답
+     */
+    @ExceptionHandler(FileNotFoundException.class)
+    public ResponseEntity<ApiResponse<Void>> handleFileNotFoundException(FileNotFoundException e) {
+        logger.warn("File not found: {}", e.getMessage());
+        
+        ErrorResponse error = ErrorResponse.of("FILE_NOT_FOUND", e.getMessage());
+        ApiResponse<Void> response = ApiResponse.error(error);
+        
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(response);
     }
     
     /**

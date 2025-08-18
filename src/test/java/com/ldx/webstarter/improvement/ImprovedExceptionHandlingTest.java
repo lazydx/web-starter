@@ -52,7 +52,7 @@ class ImprovedExceptionHandlingTest {
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.BAD_REQUEST);
         assertThat(response.getBody()).contains("\"success\":false");
         assertThat(response.getBody()).contains("\"code\":\"BAD_REQUEST\"");
-        assertThat(response.getBody()).contains("\"message\":\"필수 값이 누락되었습니다\"");
+        assertThat(response.getBody()).contains("\"message\":\"필수 값이 누락되었습니다.\"");
     }
     
     @Test
