@@ -124,7 +124,7 @@ public class RequestLoggingFilter extends OncePerRequestFilter {
             logger.info("Response Info: {}", responseInfo);
             
             // 성능 메트릭 로깅
-            if (debugProperties.isLogPerformanceMetrics()) {
+            if (debugProperties.isLogPerformanceMetrics() && debugProperties.getPerformance().isEnabled()) {
                 logPerformanceMetrics(request, response, duration);
             }
             
@@ -152,14 +152,24 @@ public class RequestLoggingFilter extends OncePerRequestFilter {
         metrics.put("requestSize", request.getContentLength());
         metrics.put("responseSize", response.getContentSize());
         
-        // 성능 경고
-        if (duration > 5000) { // 5초 이상
+        // 성능 경고 (설정 기반)
+        if (!debugProperties.getPerformance().isEnabled() || !debugProperties.getPerformance().isCollectMetrics()) {
+            return; // 성능 모니터링이 비활성화된 경우
+        }
+        
+        long slowThreshold = debugProperties.getPerformance().getSlowRequestThreshold();
+        long alertThreshold = debugProperties.getPerformance().getPerformanceAlertThreshold();
+        
+        if (duration > slowThreshold) {
             logger.warn("SLOW REQUEST DETECTED: {}", metrics);
-        } else if (duration > 1000) { // 1초 이상
+        } else if (duration > alertThreshold) {
             logger.warn("Performance Alert: {}", metrics);
         } else {
             logger.debug("Performance Metrics: {}", metrics);
         }
+        
+        // 추가 성능 분석
+        logLargeRequestResponse(request, response, metrics);
     }
 
     private boolean hasRequestBody(ContentCachingRequestWrapper request) {
@@ -202,5 +212,28 @@ public class RequestLoggingFilter extends OncePerRequestFilter {
                lowerCase.contains("cookie") || 
                lowerCase.contains("token") || 
                lowerCase.contains("password");
+    }
+
+    /**
+     * 큰 요청/응답 크기에 대한 별도 로깅.
+     */
+    private void logLargeRequestResponse(ContentCachingRequestWrapper request, 
+                                       ContentCachingResponseWrapper response, 
+                                       Map<String, Object> metrics) {
+        long requestSize = request.getContentLength();
+        long responseSize = response.getContentSize();
+        
+        long requestThreshold = debugProperties.getPerformance().getLargeRequestSizeThreshold();
+        long responseThreshold = debugProperties.getPerformance().getLargeResponseSizeThreshold();
+        
+        if (requestSize > requestThreshold) {
+            logger.warn("LARGE REQUEST DETECTED - Size: {} bytes, Endpoint: {}", 
+                       requestSize, metrics.get("endpoint"));
+        }
+        
+        if (responseSize > responseThreshold) {
+            logger.warn("LARGE RESPONSE DETECTED - Size: {} bytes, Endpoint: {}", 
+                       responseSize, metrics.get("endpoint"));
+        }
     }
 }

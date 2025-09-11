@@ -106,7 +106,7 @@ public class FileValidationService {
 
     public void validateFileContent(InputStream inputStream) {
         try {
-            byte[] header = new byte[512];
+            byte[] header = new byte[properties.getUpload().getFileContentValidationHeaderSize()];
             int bytesRead = inputStream.read(header);
             
             if (bytesRead > 0) {

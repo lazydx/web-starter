@@ -122,14 +122,18 @@ public class FileMetadata {
     }
 
     public String getFormattedSize() {
-        if (size < 1024) {
+        return getFormattedSize(1024);
+    }
+
+    public String getFormattedSize(int bytesPerUnit) {
+        if (size < bytesPerUnit) {
             return size + " B";
-        } else if (size < 1024 * 1024) {
-            return String.format("%.1f KB", size / 1024.0);
-        } else if (size < 1024 * 1024 * 1024) {
-            return String.format("%.1f MB", size / (1024.0 * 1024.0));
+        } else if (size < bytesPerUnit * bytesPerUnit) {
+            return String.format("%.1f KB", size / (double) bytesPerUnit);
+        } else if (size < bytesPerUnit * bytesPerUnit * bytesPerUnit) {
+            return String.format("%.1f MB", size / (double) (bytesPerUnit * bytesPerUnit));
         } else {
-            return String.format("%.1f GB", size / (1024.0 * 1024.0 * 1024.0));
+            return String.format("%.1f GB", size / (double) (bytesPerUnit * bytesPerUnit * bytesPerUnit));
         }
     }
 

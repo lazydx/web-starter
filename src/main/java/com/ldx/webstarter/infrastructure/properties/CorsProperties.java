@@ -46,7 +46,6 @@ public class CorsProperties {
     /**
      * How long the response to a pre-flight request can be cached by clients.
      */
-    @Min(0)
     private Duration maxAge = Duration.ofMinutes(30);
     
     /**

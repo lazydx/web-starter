@@ -15,9 +15,9 @@ public class FileStorageProperties {
     
     private Local local = new Local();
     
-    private S3 s3 = new S3();
-    
     private Azure azure = new Azure();
+    
+    private Format format = new Format();
 
     public boolean isEnabled() {
         return enabled;
@@ -51,20 +51,20 @@ public class FileStorageProperties {
         this.local = local;
     }
 
-    public S3 getS3() {
-        return s3;
-    }
-
-    public void setS3(S3 s3) {
-        this.s3 = s3;
-    }
-
     public Azure getAzure() {
         return azure;
     }
 
     public void setAzure(Azure azure) {
         this.azure = azure;
+    }
+
+    public Format getFormat() {
+        return format;
+    }
+
+    public void setFormat(Format format) {
+        this.format = format;
     }
 
     public static class Upload {
@@ -79,6 +79,7 @@ public class FileStorageProperties {
         );
         private boolean enableVirusScanning = false;
         private String tempDir = "${java.io.tmpdir}/webstarter-uploads";
+        private int fileContentValidationHeaderSize = 512;
 
         public String getMaxFileSize() {
             return maxFileSize;
@@ -126,6 +127,14 @@ public class FileStorageProperties {
 
         public void setTempDir(String tempDir) {
             this.tempDir = tempDir;
+        }
+
+        public int getFileContentValidationHeaderSize() {
+            return fileContentValidationHeaderSize;
+        }
+
+        public void setFileContentValidationHeaderSize(int fileContentValidationHeaderSize) {
+            this.fileContentValidationHeaderSize = fileContentValidationHeaderSize;
         }
     }
 
@@ -180,63 +189,6 @@ public class FileStorageProperties {
         }
     }
 
-    public static class S3 {
-        private boolean enabled = false;
-        private String bucketName;
-        private String region = "us-east-1";
-        private String accessKey;
-        private String secretKey;
-        private String pathPrefix = "uploads/";
-
-        public boolean isEnabled() {
-            return enabled;
-        }
-
-        public void setEnabled(boolean enabled) {
-            this.enabled = enabled;
-        }
-
-        public String getBucketName() {
-            return bucketName;
-        }
-
-        public void setBucketName(String bucketName) {
-            this.bucketName = bucketName;
-        }
-
-        public String getRegion() {
-            return region;
-        }
-
-        public void setRegion(String region) {
-            this.region = region;
-        }
-
-        public String getAccessKey() {
-            return accessKey;
-        }
-
-        public void setAccessKey(String accessKey) {
-            this.accessKey = accessKey;
-        }
-
-        public String getSecretKey() {
-            return secretKey;
-        }
-
-        public void setSecretKey(String secretKey) {
-            this.secretKey = secretKey;
-        }
-
-        public String getPathPrefix() {
-            return pathPrefix;
-        }
-
-        public void setPathPrefix(String pathPrefix) {
-            this.pathPrefix = pathPrefix;
-        }
-    }
-
     public static class Azure {
         private boolean enabled = false;
         private String connectionString;
@@ -273,6 +225,22 @@ public class FileStorageProperties {
 
         public void setPathPrefix(String pathPrefix) {
             this.pathPrefix = pathPrefix;
+        }
+    }
+
+    public static class Format {
+        /**
+         * 파일 크기 포맷팅을 위한 바이트 변환 단위.
+         * 기본값: 1024 (이진 단위), 1000으로 설정하면 SI 단위 사용
+         */
+        private int bytesPerUnit = 1024;
+
+        public int getBytesPerUnit() {
+            return bytesPerUnit;
+        }
+
+        public void setBytesPerUnit(int bytesPerUnit) {
+            this.bytesPerUnit = bytesPerUnit;
         }
     }
 }

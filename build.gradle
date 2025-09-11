@@ -2,12 +2,12 @@ plugins {
     id 'java-library'
     id 'maven-publish'
     id 'signing'
-    id 'org.springframework.boot' version '3.2.5'
+    id 'org.springframework.boot' version '3.2.0'
     id 'io.spring.dependency-management' version '1.1.4'
 }
 
 group = 'io.github.lazydx'
-version = '1.1.0'
+version = '1.1.1'
 
 java {
     toolchain {
@@ -135,8 +135,9 @@ publishing {
     }
 }
 
-// Signing configuration
+// Signing configuration - only sign if we have signing properties
 signing {
+    required { gradle.taskGraph.hasTask("publish") && project.hasProperty("signing.keyId") }
     sign publishing.publications.maven
 }
 

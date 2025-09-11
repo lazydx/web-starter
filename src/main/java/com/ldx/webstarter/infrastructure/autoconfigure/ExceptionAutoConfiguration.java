@@ -1,6 +1,5 @@
 package com.ldx.webstarter.infrastructure.autoconfigure;
 
-import com.ldx.webstarter.infrastructure.exception.GlobalExceptionHandler;
 import com.ldx.webstarter.infrastructure.resolver.PaginationArgumentResolver;
 import com.ldx.webstarter.infrastructure.properties.PaginationProperties;
 import org.springframework.boot.autoconfigure.AutoConfiguration;
@@ -28,15 +27,6 @@ import java.util.List;
 @EnableConfigurationProperties(PaginationProperties.class)
 public class ExceptionAutoConfiguration {
     
-    /**
-     * 전역 예외 처리기 빈을 생성합니다.
-     * 
-     * @return GlobalExceptionHandler 인스턴스
-     */
-    @Bean
-    public GlobalExceptionHandler globalExceptionHandler() {
-        return new GlobalExceptionHandler();
-    }
     
     /**
      * 페이지네이션 리졸버를 등록하는 WebMvcConfigurer 빈을 생성합니다.

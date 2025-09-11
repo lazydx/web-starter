@@ -6,8 +6,10 @@ import org.springframework.web.bind.annotation.RestController;
 
 /**
  * 개선사항 테스트용 컨트롤러.
+ * 
+ * <p>Component Scan 독립성을 위해 @RestController 어노테이션을 제거하고 
+ * AutoConfiguration에서 명시적으로 Bean 등록합니다.
  */
-@RestController
 public class TestController {
     
     @GetMapping("/test/string")

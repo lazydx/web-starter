@@ -1,5 +1,6 @@
 package com.ldx.webstarter.file;
 
+import com.ldx.webstarter.infrastructure.file.FileNameGenerator;
 import com.ldx.webstarter.infrastructure.properties.FileStorageProperties;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.UrlResource;
@@ -15,17 +16,17 @@ import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
 import java.util.UUID;
 
 public class LocalFileStorageService implements FileStorageService {
 
     private final Path rootLocation;
     private final FileStorageProperties properties;
+    private final FileNameGenerator fileNameGenerator;
 
-    public LocalFileStorageService(FileStorageProperties properties) {
+    public LocalFileStorageService(FileStorageProperties properties, FileNameGenerator fileNameGenerator) {
         this.properties = properties;
+        this.fileNameGenerator = fileNameGenerator;
         this.rootLocation = Paths.get(properties.getLocal().getBasePath()).normalize().toAbsolutePath();
         
         if (properties.getLocal().isCreateDirectories()) {
@@ -66,8 +67,8 @@ public class LocalFileStorageService implements FileStorageService {
     public FileMetadata store(String filename, InputStream inputStream, long size, String contentType, String directory) {
         try {
             String originalFilename = filename;
-            String extension = getFileExtension(filename);
-            String storedFilename = generateUniqueFilename(filename);
+            String extension = fileNameGenerator.extractFileExtension(filename);
+            String storedFilename = fileNameGenerator.generateUniqueFilename(filename, directory);
             
             Path targetLocation = resolveTargetLocation(storedFilename, directory);
             
@@ -183,7 +184,7 @@ public class LocalFileStorageService implements FileStorageService {
             
             long size = Files.size(file);
             String contentType = Files.probeContentType(file);
-            String extension = getFileExtension(filename);
+            String extension = fileNameGenerator.extractFileExtension(filename);
             String checksum = calculateChecksum(file);
             
             FileMetadata metadata = new FileMetadata(
@@ -213,29 +214,6 @@ public class LocalFileStorageService implements FileStorageService {
         }
     }
 
-    private String generateUniqueFilename(String originalFilename) {
-        String extension = getFileExtension(originalFilename);
-        String timestamp = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyyMMdd_HHmmss"));
-        String uuid = UUID.randomUUID().toString().substring(0, 8);
-        
-        if (StringUtils.hasText(extension)) {
-            return timestamp + "_" + uuid + "." + extension;
-        } else {
-            return timestamp + "_" + uuid;
-        }
-    }
-
-    private String getFileExtension(String filename) {
-        if (!StringUtils.hasText(filename)) {
-            return "";
-        }
-        
-        int lastDotIndex = filename.lastIndexOf('.');
-        if (lastDotIndex > 0 && lastDotIndex < filename.length() - 1) {
-            return filename.substring(lastDotIndex + 1).toLowerCase();
-        }
-        return "";
-    }
 
     private String calculateChecksum(Path file) {
         try {

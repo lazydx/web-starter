@@ -3,6 +3,7 @@ package com.ldx.webstarter.exception;
 import com.ldx.webstarter.infrastructure.exception.BusinessException;
 import com.ldx.webstarter.infrastructure.exception.GlobalExceptionHandler;
 import com.ldx.webstarter.infrastructure.exception.NotFoundException;
+import com.ldx.webstarter.infrastructure.properties.WebStarterProperties;
 import com.ldx.webstarter.response.ApiResponse;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -31,7 +32,9 @@ class GlobalExceptionHandlerTest {
     
     @BeforeEach
     void setUp() {
-        exceptionHandler = new GlobalExceptionHandler();
+        // Mock WebStarterProperties for GlobalExceptionHandler
+        WebStarterProperties properties = new WebStarterProperties();
+        exceptionHandler = new GlobalExceptionHandler(properties);
     }
     
     @Test

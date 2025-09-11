@@ -5,6 +5,7 @@ import com.ldx.webstarter.infrastructure.advice.ResponseAdvice;
 import com.ldx.webstarter.infrastructure.exception.BusinessException;
 import com.ldx.webstarter.infrastructure.exception.GlobalExceptionHandler;
 import com.ldx.webstarter.infrastructure.properties.PaginationProperties;
+import com.ldx.webstarter.infrastructure.properties.WebStarterProperties;
 import com.ldx.webstarter.infrastructure.resolver.PaginationArgumentResolver;
 import com.ldx.webstarter.response.ApiResponse;
 import com.ldx.webstarter.response.PageResponse;
@@ -46,7 +47,11 @@ class WebStarterFunctionalTest {
     void setUp() {
         ObjectMapper objectMapper = new ObjectMapper();
         responseAdvice = new ResponseAdvice(objectMapper);
-        exceptionHandler = new GlobalExceptionHandler();
+        
+        // Mock WebStarterProperties for GlobalExceptionHandler
+        WebStarterProperties properties = new WebStarterProperties();
+        exceptionHandler = new GlobalExceptionHandler(properties);
+        
         PaginationProperties paginationProperties = new PaginationProperties();
         paginationArgumentResolver = new PaginationArgumentResolver(paginationProperties);
     }

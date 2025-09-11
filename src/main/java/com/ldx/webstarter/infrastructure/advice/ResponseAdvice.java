@@ -22,6 +22,9 @@ import org.springframework.web.servlet.mvc.method.annotation.ResponseBodyAdvice;
  * <p>모든 컨트롤러의 응답을 ApiResponse 형식으로 자동 래핑합니다.
  * 이미 ApiResponse 형식이면 그대로 반환하고, 그렇지 않으면 성공 응답으로 래핑합니다.
  * 
+ * <p>Spring MVC 요구사항으로 인해 @RestControllerAdvice 어노테이션 유지.
+ * Component Scan 독립성을 위해 AutoConfiguration에서 Package Scan 설정.
+ * 
  * @author web-starter
  * @since 1.0.0
  */

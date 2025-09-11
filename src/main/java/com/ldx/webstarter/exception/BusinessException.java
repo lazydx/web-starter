@@ -8,7 +8,10 @@ package com.ldx.webstarter.exception;
  * 
  * @author web-starter
  * @since 1.0.0
+ * @deprecated 1.1.0부터 {@link com.ldx.webstarter.infrastructure.exception.BusinessException}을 사용하세요.
+ *             이 클래스는 향후 버전에서 제거될 예정입니다.
  */
+@Deprecated(since = "1.1.0", forRemoval = true)
 public class BusinessException extends WebStarterException {
     
     /**

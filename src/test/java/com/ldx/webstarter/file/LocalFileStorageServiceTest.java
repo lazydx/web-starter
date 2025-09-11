@@ -1,5 +1,8 @@
 package com.ldx.webstarter.file;
 
+import com.ldx.webstarter.infrastructure.file.DefaultFileNameGenerator;
+import com.ldx.webstarter.infrastructure.file.FileNameGenerator;
+import com.ldx.webstarter.infrastructure.file.FileNamingProperties;
 import com.ldx.webstarter.infrastructure.properties.FileStorageProperties;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -19,6 +22,7 @@ public class LocalFileStorageServiceTest {
 
     private LocalFileStorageService fileStorageService;
     private FileStorageProperties properties;
+    private FileNameGenerator fileNameGenerator;
 
     @BeforeEach
     void setUp() {
@@ -26,7 +30,11 @@ public class LocalFileStorageServiceTest {
         properties.getLocal().setBasePath(tempDir.toString());
         properties.getLocal().setCreateDirectories(true);
         
-        fileStorageService = new LocalFileStorageService(properties);
+        // FileNameGenerator 설정
+        FileNamingProperties namingProperties = new FileNamingProperties();
+        fileNameGenerator = new DefaultFileNameGenerator(namingProperties);
+        
+        fileStorageService = new LocalFileStorageService(properties, fileNameGenerator);
     }
 
     @Test

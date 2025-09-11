@@ -67,6 +67,11 @@ public class DebugProperties {
      * 최대 응답 본문 로그 크기 (바이트).
      */
     private int maxResponseBodyLogSize = 1024;
+    
+    /**
+     * 성능 모니터링 설정.
+     */
+    private Performance performance = new Performance();
 
     public boolean isEnabled() {
         return enabled;
@@ -154,5 +159,106 @@ public class DebugProperties {
 
     public void setMaxResponseBodyLogSize(int maxResponseBodyLogSize) {
         this.maxResponseBodyLogSize = maxResponseBodyLogSize;
+    }
+
+    public Performance getPerformance() {
+        return performance;
+    }
+
+    public void setPerformance(Performance performance) {
+        this.performance = performance;
+    }
+
+    /**
+     * 성능 모니터링 설정 클래스.
+     */
+    public static class Performance {
+
+        /**
+         * 성능 메트릭 로깅 활성화 여부.
+         */
+        private boolean enabled = true;
+
+        /**
+         * 느린 요청 임계값 (밀리초).
+         * 이 값을 초과하는 요청은 WARN 레벨로 "SLOW REQUEST DETECTED" 메시지가 로깅됩니다.
+         * 기본값: 5000ms (5초)
+         */
+        private long slowRequestThreshold = 5000L;
+
+        /**
+         * 성능 경고 임계값 (밀리초).
+         * 이 값을 초과하지만 slowRequestThreshold는 넘지 않는 요청은 WARN 레벨로 "Performance Alert" 메시지가 로깅됩니다.
+         * 기본값: 1000ms (1초)
+         */
+        private long performanceAlertThreshold = 1000L;
+
+        /**
+         * 성능 메트릭 수집 활성화 여부.
+         * false로 설정하면 성능 메트릭 계산 자체를 건너뜁니다.
+         */
+        private boolean collectMetrics = true;
+
+        /**
+         * 요청 크기 임계값 (바이트).
+         * 이 값을 초과하는 요청 크기에 대해서는 별도 로깅됩니다.
+         * 기본값: 1MB
+         */
+        private long largeRequestSizeThreshold = 1024 * 1024L; // 1MB
+
+        /**
+         * 응답 크기 임계값 (바이트).
+         * 이 값을 초과하는 응답 크기에 대해서는 별도 로깅됩니다.
+         * 기본값: 1MB
+         */
+        private long largeResponseSizeThreshold = 1024 * 1024L; // 1MB
+
+        public boolean isEnabled() {
+            return enabled;
+        }
+
+        public void setEnabled(boolean enabled) {
+            this.enabled = enabled;
+        }
+
+        public long getSlowRequestThreshold() {
+            return slowRequestThreshold;
+        }
+
+        public void setSlowRequestThreshold(long slowRequestThreshold) {
+            this.slowRequestThreshold = slowRequestThreshold;
+        }
+
+        public long getPerformanceAlertThreshold() {
+            return performanceAlertThreshold;
+        }
+
+        public void setPerformanceAlertThreshold(long performanceAlertThreshold) {
+            this.performanceAlertThreshold = performanceAlertThreshold;
+        }
+
+        public boolean isCollectMetrics() {
+            return collectMetrics;
+        }
+
+        public void setCollectMetrics(boolean collectMetrics) {
+            this.collectMetrics = collectMetrics;
+        }
+
+        public long getLargeRequestSizeThreshold() {
+            return largeRequestSizeThreshold;
+        }
+
+        public void setLargeRequestSizeThreshold(long largeRequestSizeThreshold) {
+            this.largeRequestSizeThreshold = largeRequestSizeThreshold;
+        }
+
+        public long getLargeResponseSizeThreshold() {
+            return largeResponseSizeThreshold;
+        }
+
+        public void setLargeResponseSizeThreshold(long largeResponseSizeThreshold) {
+            this.largeResponseSizeThreshold = largeResponseSizeThreshold;
+        }
     }
 }

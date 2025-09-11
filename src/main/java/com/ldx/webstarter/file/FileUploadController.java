@@ -9,6 +9,15 @@ import org.springframework.web.multipart.MultipartFile;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * 파일 업로드 컨트롤러.
+ * 
+ * <p>Spring MVC 요구사항으로 인해 @RestController 어노테이션 유지.
+ * Component Scan 독립성을 위해 AutoConfiguration에서 Package Scan 설정.
+ * 
+ * @author web-starter
+ * @since 1.0.0
+ */
 @RestController
 @RequestMapping("/api/files")
 public class FileUploadController {

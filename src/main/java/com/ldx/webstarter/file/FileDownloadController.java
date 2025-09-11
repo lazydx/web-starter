@@ -16,6 +16,15 @@ import java.io.IOException;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 
+/**
+ * 파일 다운로드 컨트롤러.
+ * 
+ * <p>Spring MVC 요구사항으로 인해 @RestController 어노테이션 유지.
+ * Component Scan 독립성을 위해 AutoConfiguration에서 Package Scan 설정.
+ * 
+ * @author web-starter
+ * @since 1.0.0
+ */
 @RestController
 @RequestMapping("/api/files")
 public class FileDownloadController {
@@ -31,7 +40,38 @@ public class FileDownloadController {
         this.properties = properties;
     }
 
-    @GetMapping("/download/{filename}")
+    /**
+     * Download file by storage path (returned from upload as storagePath field)
+     * This is the primary download endpoint that uses the storagePath from FileMetadata
+     */
+    @GetMapping("/download")
+    public ResponseEntity<Resource> downloadFileByStoragePath(@RequestParam("path") String storagePath,
+                                                            @RequestParam(value = "inline", defaultValue = "false") boolean inline,
+                                                            HttpServletRequest request) {
+        logger.debug("Download request for storage path: {}", storagePath);
+        return downloadFile(storagePath, inline, request);
+    }
+
+    /**
+     * Download file by file ID (returned from upload)
+     * This endpoint uses the FileMetadata id to download files
+     */
+    @GetMapping("/download/id/{fileId}")
+    public ResponseEntity<Resource> downloadFileById(@PathVariable String fileId,
+                                                   @RequestParam(value = "inline", defaultValue = "false") boolean inline,
+                                                   HttpServletRequest request) {
+        logger.debug("Download request for file ID: {}", fileId);
+        
+        // In a real implementation, this would query a database to get the storagePath by fileId
+        // For now, we'll try to use the fileId as the filename/storagePath
+        // The fileId might be the storedFileName in some cases
+        return downloadFile(fileId, inline, request);
+    }
+
+    /**
+     * Download file by filename or storage path
+     */
+    @GetMapping("/download/{filename:.+}")
     public ResponseEntity<Resource> downloadFile(@PathVariable String filename,
                                                @RequestParam(value = "inline", defaultValue = "false") boolean inline,
                                                HttpServletRequest request) {
