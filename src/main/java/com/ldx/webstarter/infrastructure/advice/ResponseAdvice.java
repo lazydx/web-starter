@@ -57,10 +57,24 @@ public class ResponseAdvice implements ResponseBodyAdvice<Object> {
             logger.debug("Skipping - returnType is null");
             return false;
         }
+
+        Class<?> type = returnType.getParameterType();
         
         // 이미 ApiResponse 타입이면 건너뜀
         if (returnType.getParameterType().equals(ApiResponse.class)) {
             logger.debug("Skipping - already ApiResponse type");
+            return false;
+        }
+
+        // 바이너리 데이터(byte[])는 건너뜀
+        if (type.equals(byte[].class)) {
+            logger.debug("Skipping - type is byte");
+            return false;
+        }
+
+        // ByteArrayConverter가 사용되는 경우 건너뜀
+        if (converterType != null && converterType.getSimpleName().contains("ByteArrayHttpMessageConverter")) {
+            logger.debug("Skipping - ByteArrayHttpMessageConverter");
             return false;
         }
         

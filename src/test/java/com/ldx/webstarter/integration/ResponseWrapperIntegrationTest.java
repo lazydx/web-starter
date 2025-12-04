@@ -1,10 +1,14 @@
 package com.ldx.webstarter.integration;
 
 
+import org.springframework.boot.autoconfigure.jackson.JacksonAutoConfiguration;
+
+
 import com.ldx.webstarter.infrastructure.autoconfigure.WebStarterAutoConfiguration;
 import com.ldx.webstarter.response.ApiResponse;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.autoconfigure.web.servlet.WebMvcAutoConfiguration;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
@@ -14,8 +18,12 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
-import static org.hamcrest.Matchers.*;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static org.hamcrest.Matchers.containsString;
+import static org.hamcrest.Matchers.hasSize;
+import static org.hamcrest.Matchers.not;
 
 /**
  * Response Wrapper 통합 테스트
@@ -23,13 +31,16 @@ import static org.hamcrest.Matchers.*;
  * API 응답이 자동으로 ApiResponse로 래핑되는지 검증합니다.
  */
 @SpringBootTest(classes = {
+    WebMvcAutoConfiguration.class,
     WebStarterAutoConfiguration.class,
+    JacksonAutoConfiguration.class,
     ResponseWrapperIntegrationTest.TestController.class
 })
 @AutoConfigureMockMvc
 @TestPropertySource(properties = {
     "web-starter.enabled=true",
-    "web-starter.response-toggle.enabled=true"
+    "web-starter.response-toggle.enabled=true",
+    "management.endpoints.web.exposure.include=health,prometheus"
 })
 class ResponseWrapperIntegrationTest {
     
@@ -91,7 +102,18 @@ class ResponseWrapperIntegrationTest {
             // 이중 래핑되지 않았는지 확인
             .andExpect(jsonPath("$.data.success").doesNotExist());
     }
-    
+
+    @Test
+    void binaryResponse_shouldNotBeWrapped() throws Exception {
+        // byte[] 응답은 ApiResponse로 래핑되지 않고, 원본 데이터가 그대로 반환되어야 함
+        mockMvc.perform(get("/test/binary"))
+                .andExpect(status().isOk())
+                .andExpect(content().contentType(MediaType.APPLICATION_OCTET_STREAM))
+                .andExpect(content().bytes("binary data".getBytes()))
+                // ApiResponse로 래핑되지 않았는지 확인
+                .andExpect(content().string(not(containsString("success"))));
+    }
+
     /**
      * 테스트용 컨트롤러
      */
@@ -121,6 +143,11 @@ class ResponseWrapperIntegrationTest {
         @GetMapping("/test/already-wrapped")
         public ApiResponse<String> alreadyWrappedResponse() {
             return ApiResponse.success("Already wrapped");
+        }
+
+        @GetMapping("/test/binary")
+        public byte[] binaryResponse() {
+            return "binary data".getBytes();
         }
         
         static class TestUser {
