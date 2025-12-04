@@ -77,7 +77,7 @@ public class ResponseAdvice implements ResponseBodyAdvice<Object> {
             logger.debug("Skipping - ByteArrayHttpMessageConverter");
             return false;
         }
-        
+
         // Resource 타입(파일 다운로드)은 건너뜀
         if (Resource.class.isAssignableFrom(returnType.getParameterType())) {
             logger.debug("Skipping - Resource type (file download)");
@@ -95,7 +95,7 @@ public class ResponseAdvice implements ResponseBodyAdvice<Object> {
         
         // Actuator 엔드포인트는 건너뜀
         String declaringClassName = returnType.getDeclaringClass().getName();
-        if (declaringClassName.startsWith("org.springframework.boot.actuator") ||
+        if (declaringClassName.startsWith("org.springframework.boot.actuate") ||
             declaringClassName.contains("HealthEndpoint") ||
             declaringClassName.contains("InfoEndpoint")) {
             logger.debug("Skipping - actuator endpoint: {}", declaringClassName);
