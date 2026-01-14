@@ -18,6 +18,7 @@ import org.springframework.boot.web.servlet.FilterRegistrationBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.core.Ordered;
+import org.springframework.core.io.ClassPathResource;
 import org.springframework.http.converter.HttpMessageConverter;
 import org.springframework.http.converter.StringHttpMessageConverter;
 import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
@@ -30,6 +31,7 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
 import jakarta.annotation.PostConstruct;
 import java.util.List;
+import java.util.Properties;
 
 /**
  * Web Starter 메인 자동 설정 클래스.
@@ -84,10 +86,24 @@ public class WebStarterAutoConfiguration {
      */
     @PostConstruct
     public void init() {
+        String version = "DEV"; // 기본값
+        try {
+            Properties props = new Properties();
+            // build.gradle에서 생성된 version.properties 파일 로드
+            props.load(new ClassPathResource("version.properties").getInputStream());
+            version = props.getProperty("version", version);
+        } catch (Exception e) {
+            // 속성 파일을 찾지 못한 경우, MANIFEST.MF에서 다시 시도 (운영 환경)
+            String manifestVersion = getClass().getPackage().getImplementationVersion();
+            if (manifestVersion != null) {
+                version = manifestVersion;
+            }
+        }
+
         // 헤더
         logger.info("╔═══════════════════════════════════════════════════════════════╗");
         logger.info("║                 🚀 LDX WEB STARTER                            ║");
-        logger.info("║                    Version 1.1.0                               ║");
+        logger.info(String.format("║                    Version %-35s ║", version));
         logger.info("╚═══════════════════════════════════════════════════════════════╝");
         
         // 설정 상태
@@ -135,9 +151,9 @@ public class WebStarterAutoConfiguration {
                 if (!properties.isResponseEnabled()) {
                     return;
                 }
-                
+
                 logger.debug("Configuring HttpMessageConverter order for ResponseAdvice compatibility");
-                
+
                 // StringHttpMessageConverter를 찾아서 제거
                 HttpMessageConverter<?> stringConverter = null;
                 for (int i = 0; i < converters.size(); i++) {
@@ -146,7 +162,7 @@ public class WebStarterAutoConfiguration {
                         break;
                     }
                 }
-                
+
                 // MappingJackson2HttpMessageConverter 뒤에 StringHttpMessageConverter 추가
                 if (stringConverter != null) {
                     boolean jacksonFound = false;
@@ -157,7 +173,7 @@ public class WebStarterAutoConfiguration {
                             break;
                         }
                     }
-                    
+
                     // Jackson 컨버터가 없으면 마지막에 추가
                     if (!jacksonFound) {
                         converters.add(stringConverter);

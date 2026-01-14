@@ -7,7 +7,7 @@ plugins {
 }
 
 group = 'io.github.lazydx'
-version = '1.1.1'
+version = '1.1.2'
 
 java {
     toolchain {
@@ -35,11 +35,16 @@ dependencies {
     
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
     testImplementation 'org.springframework.boot:spring-boot-starter-actuator'
+    testImplementation 'io.micrometer:micrometer-registry-prometheus'
     testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
 }
 
 tasks.named('test') {
     useJUnitPlatform()
+}
+
+processResources {
+    expand(project.properties)
 }
 
 jar {
